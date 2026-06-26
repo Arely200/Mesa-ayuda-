@@ -1,0 +1,11 @@
+# ============================================================
+# BREVE DESCRIPCIÓN:
+# Redirige todas las peticiones a public/index.php
+# ============================================================
+
+RewriteEngine On
+
+# Redirigir todas las peticiones a index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]

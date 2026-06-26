@@ -1,5 +1,10 @@
 <?php
-// index.php - Punto de entrada
+// ============================================================
+// BREVE DESCRIPCIÓN:
+// Punto de entrada principal del sistema.
+// Carga la configuración, el autoloader de clases, inicia la
+// sesión y entrega el control al Router para procesar la URL.
+// ============================================================
 
 // 1. Cargar variables de entorno
 require_once __DIR__ . '/src/Config/config.php';
@@ -16,8 +21,8 @@ use Core\Router;
 $router = new Router();
 $url = $_GET['url'] ?? '';
 
-// 5. Definir rutas
-require_once __DIR__ . '/src/Config/routes.php';
+// 5. Definir rutas (se agregarán después)
+// require_once __DIR__ . '/src/Config/routes.php';
 
 // 6. Despachar la petición
 $router->dispatch($url, $_SERVER['REQUEST_METHOD']);

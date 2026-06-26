@@ -1,5 +1,11 @@
 <?php
-// src/Config/Database.php
+// ============================================================
+// BREVE DESCRIPCIÓN:
+// Clase de conexión a la base de datos (Patrón Singleton).
+// Garantiza una única conexión PDO en toda la aplicación.
+// También incluye métodos helpers para ejecutar consultas
+// con prepared statements (seguridad contra SQL Injection).
+// ============================================================
 
 namespace Config;
 
@@ -44,13 +50,6 @@ class Database
         return $this->pdo;
     }
     
-    // Método para ejecutar consultas con prepared statements (SEGURIDAD)
-    public function prepare($sql)
-    {
-        return $this->pdo->prepare($sql);
-    }
-    
-    // Método para ejecutar consultas y obtener resultados
     public function query($sql, $params = [])
     {
         $stmt = $this->pdo->prepare($sql);
@@ -58,21 +57,18 @@ class Database
         return $stmt;
     }
     
-    // Método para obtener un solo registro
     public function fetchOne($sql, $params = [])
     {
         $stmt = $this->query($sql, $params);
         return $stmt->fetch();
     }
     
-    // Método para obtener múltiples registros
     public function fetchAll($sql, $params = [])
     {
         $stmt = $this->query($sql, $params);
         return $stmt->fetchAll();
     }
     
-    // Método para insertar y obtener el ID
     public function insert($sql, $params = [])
     {
         $stmt = $this->query($sql, $params);
