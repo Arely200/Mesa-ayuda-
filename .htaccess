@@ -1,0 +1,19 @@
+# .htaccess
+RewriteEngine On
+
+# Redirigir todas las peticiones a public/index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+
+# Seguridad: No permitir acceso a archivos sensibles
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Proteger archivos .env
+<Files ".env">
+    Order allow,deny
+    Deny from all
+</Files>
