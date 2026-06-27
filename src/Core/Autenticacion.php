@@ -8,16 +8,15 @@
 
 namespace Core;
 
-use Config\Database;
-use Helpers\Sanitizer;
+use Config\BaseDatos;
 
-class Auth
+class Autenticacion
 {
     private static $user = null;
 
     public static function login($email, $password)
     {
-        $db = Database::getInstance()->getConnection();
+        $db = BaseDatos::obtenerInstancia()->obtenerConexion();
         
         // Buscar usuario por email
         $stmt = $db->prepare("SELECT * FROM usuarios WHERE email = ?");
@@ -78,10 +77,15 @@ class Auth
         return isset($_SESSION['user_id']);
     }
 
+    public static function estaLogueado()
+    {
+        return self::isLoggedIn();
+    }
+
     public static function getUser()
     {
         if (self::$user === null && self::isLoggedIn()) {
-            $db = Database::getInstance()->getConnection();
+            $db = BaseDatos::obtenerInstancia()->obtenerConexion();
             $stmt = $db->prepare("SELECT * FROM usuarios WHERE id = ?");
             $stmt->execute([$_SESSION['user_id']]);
             self::$user = $stmt->fetch();
@@ -89,11 +93,21 @@ class Auth
         return self::$user;
     }
 
+    public static function obtenerUsuario()
+    {
+        return self::getUser();
+    }
+
     public static function checkRole($role)
     {
         if (!self::isLoggedIn()) return false;
         $user = self::getUser();
         return $user['rol'] === $role;
+    }
+
+    public static function verificarRol($role)
+    {
+        return self::checkRole($role);
     }
 
     public static function hasPermission($modulo, $accion)
@@ -104,17 +118,24 @@ class Auth
         // Admin tiene todos los permisos
         if ($user['rol'] === 'admin') return true;
         
-        $db = Database::getInstance()->getConnection();
+        $db = BaseDatos::obtenerInstancia()->obtenerConexion();
         $stmt = $db->prepare("SELECT * FROM permisos WHERE rol = ? AND modulo = ? AND accion = ? AND permitido = 1");
         $stmt->execute([$user['rol'], $modulo, $accion]);
         return $stmt->fetch() ? true : false;
     }
 
+    public static function tienePermiso($modulo, $accion)
+    {
+        return self::hasPermission($modulo, $accion);
+    }
+
     private static function registrarIntento($email, $exitoso, $mensaje)
     {
-        $db = Database::getInstance()->getConnection();
+        $db = BaseDatos::obtenerInstancia()->obtenerConexion();
         $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
         $stmt = $db->prepare("INSERT INTO logs_login (email, ip, exitoso, mensaje) VALUES (?, ?, ?, ?)");
         $stmt->execute([$email, $ip, $exitoso, $mensaje]);
     }
 }
+
+class_alias(Autenticacion::class, __NAMESPACE__ . '\\Auth');

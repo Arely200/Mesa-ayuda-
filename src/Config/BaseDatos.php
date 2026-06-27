@@ -12,9 +12,9 @@ namespace Config;
 use PDO;
 use PDOException;
 
-class Database
+class BaseDatos
 {
-    private static $instance = null;
+    private static $instancia = null;
     private $pdo;
     
     private function __construct()
@@ -37,41 +37,41 @@ class Database
         }
     }
     
-    public static function getInstance()
+    public static function obtenerInstancia()
     {
-        if (self::$instance === null) {
-            self::$instance = new self();
+        if (self::$instancia === null) {
+            self::$instancia = new self();
         }
-        return self::$instance;
+        return self::$instancia;
     }
     
-    public function getConnection()
+    public function obtenerConexion()
     {
         return $this->pdo;
     }
     
-    public function query($sql, $params = [])
+    public function consulta($sql, $params = [])
     {
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         return $stmt;
     }
     
-    public function fetchOne($sql, $params = [])
+    public function obtenerUno($sql, $params = [])
     {
-        $stmt = $this->query($sql, $params);
+        $stmt = $this->consulta($sql, $params);
         return $stmt->fetch();
     }
     
-    public function fetchAll($sql, $params = [])
+    public function obtenerTodos($sql, $params = [])
     {
-        $stmt = $this->query($sql, $params);
+        $stmt = $this->consulta($sql, $params);
         return $stmt->fetchAll();
     }
     
-    public function insert($sql, $params = [])
+    public function insertar($sql, $params = [])
     {
-        $stmt = $this->query($sql, $params);
+        $stmt = $this->consulta($sql, $params);
         return $this->pdo->lastInsertId();
     }
 }

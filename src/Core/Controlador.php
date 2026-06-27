@@ -9,21 +9,21 @@
 
 namespace Core;
 
-class Controller
+class Controlador
 {
-    protected function view($view, $data = [])
+    protected function vista($vista, $datos = [])
     {
-        extract($data);
-        $viewPath = VIEWS_PATH . '/' . $view . '.php';
+        extract($datos);
+        $rutaVista = VIEWS_PATH . '/' . $vista . '.php';
         
-        if (file_exists($viewPath)) {
-            require_once $viewPath;
+        if (file_exists($rutaVista)) {
+            require_once $rutaVista;
         } else {
-            throw new \Exception("Vista no encontrada: $view");
+            throw new \Exception("Vista no encontrada: $vista");
         }
     }
 
-    protected function redirect($url)
+    protected function redirigir($url)
     {
         header('Location: ' . BASE_URL . '/' . ltrim($url, '/'));
         exit;

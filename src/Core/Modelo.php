@@ -8,68 +8,69 @@
 // debe definir su propiedad $table con el nombre de la tabla.
 // ============================================================
 
+
 namespace Core;
 
-use Config\Database;
+use Config\BaseDatos;
 use PDO;
 
-class Model
+class Modelo
 {
     protected $db;
-    protected $table;
+    protected $tabla;
 
     public function __construct()
     {
-        $this->db = Database::getInstance()->getConnection();
+        $this->db = BaseDatos::obtenerInstancia()->obtenerConexion();
     }
 
-    public function findAll($limit = null, $offset = 0)
+    public function encontrarTodos($limite = null, $desplazamiento = 0)
     {
-        $sql = "SELECT * FROM {$this->table} WHERE activo = 1";
-        if ($limit) {
-            $sql .= " LIMIT $limit OFFSET $offset";
+        $sql = "SELECT * FROM {$this->tabla} WHERE activo = 1";
+        if ($limite) {
+            $sql .= " LIMIT $limite OFFSET $desplazamiento";
         }
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll();
     }
 
-    public function findById($id)
+    public function encontrarPorId($id)
     {
-        $sql = "SELECT * FROM {$this->table} WHERE id = ?";
+        $sql = "SELECT * FROM {$this->tabla} WHERE id = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
 
-    public function create($data)
+    public function crear($datos)
     {
-        $fields = implode(', ', array_keys($data));
-        $placeholders = ':' . implode(', :', array_keys($data));
+        $campos = implode(', ', array_keys($datos));
+        $marcadores = ':' . implode(', :', array_keys($datos));
         
-        $sql = "INSERT INTO {$this->table} ($fields) VALUES ($placeholders)";
+        $sql = "INSERT INTO {$this->tabla} ($campos) VALUES ($marcadores)";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute($data);
+        $stmt->execute($datos);
         return $this->db->lastInsertId();
     }
 
-    public function update($id, $data)
+    public function actualizar($id, $datos)
     {
         $set = [];
-        foreach ($data as $key => $value) {
+        foreach ($datos as $key => $value) {
             $set[] = "$key = :$key";
         }
         $setStr = implode(', ', $set);
-        $data['id'] = $id;
+        $datos['id'] = $id;
         
-        $sql = "UPDATE {$this->table} SET $setStr WHERE id = :id";
+        $sql = "UPDATE {$this->tabla} SET $setStr WHERE id = :id";
         $stmt = $this->db->prepare($sql);
-        return $stmt->execute($data);
+        return $stmt->execute($datos);
     }
 
-    public function delete($id)
+    public function eliminar($id)
     {
-        $sql = "UPDATE {$this->table} SET activo = 0 WHERE id = ?";
+        $sql = "UPDATE {$this->tabla} SET activo = 0 WHERE id = ?";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([$id]);
     }

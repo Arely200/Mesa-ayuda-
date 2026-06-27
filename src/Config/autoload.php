@@ -9,6 +9,26 @@
 
 spl_autoload_register(function ($className) {
     $baseDir = __DIR__ . '/../';
+
+    $aliases = [
+        'Core\\Auth' => 'Core/Autenticacion.php',
+        'Core\\Controller' => 'Core/Controlador.php',
+        'Core\\Model' => 'Core/Modelo.php',
+        'Core\\Router' => 'Core/Enrutador.php',
+        'Core\\Session' => 'Core/Sesion.php',
+        'Helpers\\Sanitizer' => 'Helpers/Sanitizador.php',
+        'Helpers\\Validator' => 'Helpers/Validador.php',
+        'Middleware\\AuthMiddleware' => 'Middleware/AutenticacionMiddleware.php',
+        'Middleware\\RoleMiddleware' => 'Middleware/RolMiddleware.php'
+    ];
+
+    if (isset($aliases[$className])) {
+        $file = $baseDir . $aliases[$className];
+        if (file_exists($file)) {
+            require_once $file;
+            return true;
+        }
+    }
     
     $map = [
         'Core\\' => 'Core/',

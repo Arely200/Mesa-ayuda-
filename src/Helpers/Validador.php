@@ -8,7 +8,7 @@
 
 namespace Helpers;
 
-class Validator
+class Validador
 {
     public static function validatePassword($password)
     {
@@ -19,12 +19,22 @@ class Validator
         return true;
     }
 
+    public static function validarPassword($password)
+    {
+        return self::validatePassword($password);
+    }
+
     public static function validateEmail($email)
     {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             throw new \Exception('Email inválido');
         }
         return true;
+    }
+
+    public static function validarEmail($email)
+    {
+        return self::validateEmail($email);
     }
 
     public static function validateRequired($data, $fields)
@@ -37,6 +47,11 @@ class Validator
         return true;
     }
 
+    public static function validarRequeridos($data, $fields)
+    {
+        return self::validateRequired($data, $fields);
+    }
+
     public static function validateIdentificacion($identificacion)
     {
         if (!preg_match('/^[0-9]{1,20}$/', $identificacion)) {
@@ -45,9 +60,21 @@ class Validator
         return true;
     }
 
+    public static function validarIdentificacion($identificacion)
+    {
+        return self::validateIdentificacion($identificacion);
+    }
+
     public static function validateDate($date, $format = 'Y-m-d')
     {
         $d = \DateTime::createFromFormat($format, $date);
         return $d && $d->format($format) === $date;
     }
+
+    public static function validarFecha($date, $format = 'Y-m-d')
+    {
+        return self::validateDate($date, $format);
+    }
 }
+
+class_alias(Validador::class, __NAMESPACE__ . '\\Validator');
